@@ -25,6 +25,7 @@ jobs:
 
           curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sigstore" | jq -r '.value' > $AWS_WEB_IDENTITY_TOKEN_FILE
 
-      - run: aws sts get-caller-identity | wc -m # don't publish account ID, but count number of chars returned
+      # IMPORTANT; Don't expose account ID in public output
+      - run: aws sts get-caller-identity | awk '{print $2}' | sed 's/[0-9]/#/g'
         env:
           AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
